@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>판매내역입력</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        body{ height: 100vh; display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container{ width: 400px; padding: 40px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.589);
+            border-radius: 10px;
+        }
+        h1{ background-color: azure;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 15px;
+        }
+        #form>div{
+            padding: 5px 0; 
+            display: flex;
+            align-items: center;
+        }
+        #form label{ width: 30%;}
+        #form input{ width: 70%;height: 50px;}
+
+        .ctrl-button{ gap: 5px; justify-content: center;}
+        .ctrl-button button{ padding: 10px 15px;}
+
+        .table-container{
+            width:800px; 
+        }
+        table{ width:100%; margin-bottom: 10px;}
+        .table-container tr{ height: 30px;}
+        .table-container th{ background-color: gainsboro;}
+        .table-container td{ border-bottom: 1px solid gainsboro;}
+        .table-container td:nth-child(3),
+        .table-container td:nth-child(4),
+        .table-container td:nth-child(5){
+            text-align: right;
+            padding-right: 16px;
+        }
+        .table-container td:nth-child(1),
+        .table-container td:nth-child(2){
+            padding-left: 16px;
+        }
+        .ctrl-container{ 
+            display: flex;
+            justify-content: space-between;
+        }
+        .ctrl-container>*{ padding:10px; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>판매내역입력</h1>
+        <form action="" id="form">
+            <div>
+                <label for="accountName">거래처명</label>
+                <input type="text" id="accountName">
+            </div>
+            <div>
+                <label for="productNumber">상품번호</label>
+                <input type="text" id="productNumber">
+            </div>
+            <div>
+                <label for="saleDate">판매일</label>
+                <input type="text" id="saleDate"  readonly disabled>
+            </div>
+            <div>
+                <label for="quantity">수량</label>
+                <input type="number" id="quantity">
+            </div>
+            <div>
+                <label for="price">단가</label>
+                <input type="number" id="price">
+            </div>
+            <div>
+                <label for="amount">금액</label>
+                <input type="text" id="amount">
+            </div>
+            <div class="ctrl-button">
+                <button class="dataInput">입력</button>
+                <button class="reset">취소</button>
+                <button class="goReportPage">판매현황보기</button>
+            </div>
+        </form>
+    </div>
+    <div class="table-container hidden">
+        <h1>거래처별 판매현황 보고서</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>거래처명</th>
+                    <th>상품명</th>
+                    <th>수량</th>
+                    <th>단가</th>
+                    <th>금액</th>
+                </tr>
+                <tr>
+                    <td>골드아이</td>
+                    <td>BASIC</td>
+                    <td>5</td>
+                    <td>9,800</td>
+                    <td>46,909</td>
+                </tr>
+            </thead>
+            <tbody  class="tbody">
+                
+                <!-- items 를 테이블 모양으로 삽입하기  -->
+
+            </tbody>
+        </table>
+        <div class="ctrl-container">
+            <span class="today"></span>
+            <button class="dataInputPage">판매내역입력</button>
+        </div>
+    </div>
+
+    <script>
+        const items = [];
+        const tbody = document.querySelector('.table-container .tbody');
+
+        const form = document.querySelector('#form');
+        form.addEventListener('submit', (event)=>{
+            event.preventDefault();
+        })
+
+        const formContainer = document.querySelector('.form-container');
+        const tableContainer = document.querySelector('.table-container');
+        const goReportPage = document.querySelector('.goReportPage');
+        const dataInputPage = document.querySelector('.dataInputPage');
+
+        goReportPage.addEventListener('click', ()=>{
+                formContainer.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+                console.log(items)
+                items.forEach(item=>{
+                    printItems(item);
+                })    
+        })
+
+        
+        dataInputPage.addEventListener('click', ()=>{
+                formContainer.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+        })
+
+        function todayPrint(){
+            const today = document.querySelector('.today');
+            const toDate = new Date(); 
+            console.log( toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
+
+            const strDate = toDate.getFullYear()+"-"+toDate.getMonth()+"-"+toDate.getDate() ;
+            today.innerHTML = strDate; 
+
+            return strDate;  
+        }
+        
+        todayPrint();
+
+        const saleDate = document.querySelector('#saleDate');
+        saleDate.value = todayPrint();  // 리턴되는 날짜를 출력 
+        
+
+        const quantity = document.querySelector('#quantity');
+        const price = document.querySelector('#price');
+        const amount = document.querySelector('#amount');
+
+        amount.addEventListener('focus', (event)=>{
+            // console.log( 'focused');
+            let amountValue = parseInt(quantity.value) * parseInt(price.value);
+            amount.value = amountValue; 
+        })
+    </script>
+    <script>
+        // reset button 클릭되면 지우기
+        const accountName = document.querySelector('#accountName');
+        const productNumber = document.querySelector('#productNumber');
+
+        document.querySelector('.reset').addEventListener('click', ()=>{
+            accountName.value="";
+            productNumber.value="";
+            quantity.value = "";
+            price.value = "";
+            amount.value = "";
+        })
+
+        //const items = [];
+        document.querySelector('.dataInput').addEventListener('click', ()=>{
+            const item = {
+                accountName : accountName.value,
+                productNumber : productNumber.value,
+                quantitiy : quantity.value,
+                price : price.value,
+                amount : amount.value,
+            }
+            console.log( item );
+            items.push(item);
+        })
+
+       
+        
+        function printItems(item){
+             const tr = document.createElement('tr');
+             const td1 = document.createElement('td');
+             const td2 = document.createElement('td');
+             const td3 = document.createElement('td');
+             const td4 = document.createElement('td');
+             const td5 = document.createElement('td');
+             td1.innerHTML = item.accountName; 
+             td2.innerHTML = item.productNumber; 
+             td3.innerHTML = item.quantitiy; 
+             td4.innerHTML = item.price; 
+             td5.innerHTML = item.amount; 
+          
+            tr.appendChild( td1 );
+            tr.appendChild( td2 );
+            tr.appendChild( td3 );
+            tr.appendChild( td4 );
+            tr.appendChild( td5 );
+
+            tbody.appendChild(tr);
+
+        }
+        // 갱신시 데이터가 삭제되므로 localStorage 에 저장 후 불러와서 표시하기         
+    </script>
+</body>
+</html>
